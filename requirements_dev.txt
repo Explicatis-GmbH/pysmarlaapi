@@ -1,0 +1,5 @@
+aiohttp~=3.11.11
+flit~=3.10.1
+jsonpickle~=4.0.0
+pre-commit~=4.0.1
+pysignalr~=1.1.0
