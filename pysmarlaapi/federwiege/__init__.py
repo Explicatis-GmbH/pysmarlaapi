@@ -36,7 +36,7 @@ class Federwiege:
 
         self.available = False
 
-    def get_service(self, service):
+    def get_service(self, service: str):
         if service not in self.services:
             return None
         return self.services[service]

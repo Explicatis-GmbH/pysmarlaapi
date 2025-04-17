@@ -36,7 +36,7 @@ class Property(Generic[_VT]):
         else:
             self.value = new_value
 
-    def push(self):
+    def push(self, value: _VT):
         pass
 
     def pull(self):
