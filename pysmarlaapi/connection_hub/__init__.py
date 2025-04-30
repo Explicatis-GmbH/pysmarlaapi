@@ -123,9 +123,8 @@ class ConnectionHub:
         asyncio.run_coroutine_threadsafe(self.client._transport._ws.close(), self._loop)
 
     async def refresh_token(self):
-        await self.connection.get_token()
-        auth_token = self.connection.token.token
-        self.client._transport._headers["Authorization"] = f"Bearer {auth_token}"
+        await self.connection.refresh_token()
+        self.client._transport._headers["Authorization"] = f"Bearer {self.connection.get_token()}"
         self.logger.info("Auth token refreshed")
 
     def send_serialized_data(self, event, value=None):
@@ -139,9 +138,9 @@ class ConnectionHub:
 
         self.logger.debug(f"Sending data, Event: {event}, Payload: {str(serialized_result)}")
 
-        asyncio.run_coroutine_threadsafe(self.send_data(event, [serialized_result]), self._loop)
+        asyncio.run_coroutine_threadsafe(self.async_send_data(event, [serialized_result]), self._loop)
 
-    async def send_data(self, event, data):
+    async def async_send_data(self, event, data):
         try:
             await self.client.send(event, data)
         except Exception:

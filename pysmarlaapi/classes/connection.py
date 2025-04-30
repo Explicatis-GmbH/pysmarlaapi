@@ -19,22 +19,23 @@ class Connection:
         else:
             self.token = None
 
-    async def get_token(self) -> AuthToken:
+    def get_token(self) -> str:
+        return self.token.token
+
+    async def refresh_token(self) -> bool:
+        async with aiohttp.ClientSession(self.url) as session:
+            async with session.post(
+                "/api/AppParing/getToken",
+                headers={"accept": "*/*", "Content-Type": "application/json"},
+                data=jsonpickle.encode(self.token, unpicklable=False),
+            ) as response:
+                if response.status != 200:
+                    return False
+                json_body = await response.json()
+
         try:
-            async with aiohttp.ClientSession(self.url) as session:
-                async with session.post(
-                    "/api/AppParing/getToken",
-                    headers={"accept": "*/*", "Content-Type": "application/json"},
-                    data=jsonpickle.encode(self.token, unpicklable=False),
-                ) as response:
-                    if response.status != 200:
-                        return None
-                    json_body = await response.json()
+            self.token = AuthToken.from_json(json_body)
         except ValueError:
-            return None
-        try:
-            new_token = AuthToken.from_json(json_body)
-        except ValueError:
-            return None
-        self.token = new_token
-        return self.token
+            return False
+
+        return True

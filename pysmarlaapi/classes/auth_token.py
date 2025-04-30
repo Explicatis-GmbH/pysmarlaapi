@@ -1,4 +1,5 @@
 import base64
+import json
 from dataclasses import dataclass
 from typing import Self
 
@@ -16,16 +17,16 @@ class AuthToken:
     appCulture: str
 
     @classmethod
-    def from_json(cls, value) -> Self:
+    def from_json(cls, value: dict) -> Self:
         value["py/object"] = "pysmarlaapi.classes.auth_token.AuthToken"
-        return jsonpickle.decode(str(value))
+        return jsonpickle.decode(json.dumps(value))
 
     @classmethod
-    def from_string(cls, value) -> Self:
-        return AuthToken.from_json(jsonpickle.decode(value))
+    def from_string(cls, value: str) -> Self:
+        return AuthToken.from_json(json.loads(value))
 
     @classmethod
-    def from_base64(cls, value) -> Self:
+    def from_base64(cls, value: str) -> Self:
         token = base64.b64decode(value.encode()).decode()
         return AuthToken.from_string(token)
 

@@ -5,7 +5,6 @@ import threading
 import time
 
 sys.path.append("../")
-logging.basicConfig(level=20)
 
 from pysmarlaapi import Connection, Federwiege
 
@@ -14,6 +13,8 @@ try:
 except ImportError:
     print("config.py or mandatory variables missing, please add in root folder...")
     sys.exit()
+
+logging.basicConfig(level=20)
 
 loop = asyncio.get_event_loop()
 async_thread = threading.Thread(target=loop.run_forever)
