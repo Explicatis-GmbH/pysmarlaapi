@@ -32,14 +32,14 @@ def main():
     while not (federwiege.connected and federwiege.available):
         time.sleep(1)
 
-    swing_active_prop = federwiege.get_service("babywiege").get_property("swing_active")
-    intensity_prop = federwiege.get_service("babywiege").get_property("intensity")
+    swing_active_prop = federwiege.get_property("babywiege", "swing_active")
+    intensity_prop = federwiege.get_property("babywiege", "intensity")
 
-    oscillation_prop = federwiege.get_service("analyser").get_property("oscillation")
-    swing_count_prop = federwiege.get_service("analyser").get_property("swing_count")
+    oscillation_prop = federwiege.get_property("analyser", "oscillation")
+    swing_count_prop = federwiege.get_property("analyser", "swing_count")
 
-    display_name_prop = federwiege.get_service("info").get_property("display_name")
-    version_prop = federwiege.get_service("info").get_property("version")
+    display_name_prop = federwiege.get_property("info", "display_name")
+    version_prop = federwiege.get_property("info", "version")
 
     time.sleep(1)
 
