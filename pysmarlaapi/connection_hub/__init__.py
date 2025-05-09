@@ -86,7 +86,7 @@ class ConnectionHub:
         self.logger.info("Connection to server closed")
 
     async def on_error(self, message):
-        self.logger.error("Connection error occurred: " + str(message))
+        self.logger.error("Connection error occurred: %s", str(message))
 
     def start(self):
         if self.running:
@@ -107,7 +107,7 @@ class ConnectionHub:
             try:
                 await self.client.run()
             except Exception as e:
-                self.logger.warning(f"Error during connection: {type(e).__name__}: {str(e)}")
+                self.logger.warning("Error during connection: %s: %s", type(e).__name__, str(e))
 
             # Random backoff to avoid simultaneous connection attempts
             backoff = random.randint(0, self._backoff)
@@ -136,7 +136,7 @@ class ConnectionHub:
         if value is not None:
             serialized_result["value"] = value
 
-        self.logger.debug(f"Sending data, Event: {event}, Payload: {str(serialized_result)}")
+        self.logger.debug("Sending data, Event: %s, Payload: %s", event, str(serialized_result))
 
         asyncio.run_coroutine_threadsafe(self.async_send_data(event, [serialized_result]), self._loop)
 
