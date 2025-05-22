@@ -22,10 +22,10 @@ class Property(Generic[_VT]):
         async with self.lock:
             self.listeners.remove(listener)
 
-    async def notify_listeners(self, value):
+    async def notify_listeners(self):
         async with self.lock:
             for listener in self.listeners:
-                await listener(value)
+                await listener(self.value)
 
     def get(self) -> _VT:
         return self.value

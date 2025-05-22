@@ -16,7 +16,7 @@ class SwingActiveProperty(Property[bool]):
     async def on_callback(self, args):
         value = args[0]["value"]
         self.set(value, push=False)
-        await self.notify_listeners(value)
+        await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
         super().__init__(hub, False)
@@ -36,7 +36,7 @@ class IntensityProperty(Property[int]):
     async def on_callback(self, args):
         value = args[0]["value"]
         self.set(value, push=False)
-        await self.notify_listeners(value)
+        await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
         super().__init__(hub, 0)
@@ -56,7 +56,7 @@ class SmartModeProperty(Property[bool]):
     async def on_callback(self, args):
         value = args[0]["value"]
         self.set(value, push=False)
-        await self.notify_listeners(value)
+        await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
         super().__init__(hub, False)
