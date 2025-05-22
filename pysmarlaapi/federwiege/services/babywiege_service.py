@@ -8,7 +8,7 @@ class BabywiegeService(Service):
         super().__init__()
         self.add_property("swing_active", SwingActiveProperty(hub))
         self.add_property("intensity", IntensityProperty(hub))
-        self.add_property("smartmode", SmartModeProperty(hub))
+        self.add_property("smart_mode", SmartModeProperty(hub))
 
 
 class SwingActiveProperty(Property[bool]):
@@ -19,8 +19,7 @@ class SwingActiveProperty(Property[bool]):
         await self.notify_listeners(value)
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
-        self.value = False
+        super().__init__(hub, False)
 
     def pull(self):
         self.hub.send_serialized_data("GetSwingActive")
@@ -40,8 +39,7 @@ class IntensityProperty(Property[int]):
         await self.notify_listeners(value)
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
-        self.value = 0
+        super().__init__(hub, 0)
 
     def pull(self):
         self.hub.send_serialized_data("GetIntensity")
@@ -61,8 +59,7 @@ class SmartModeProperty(Property[bool]):
         await self.notify_listeners(value)
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
-        self.value = False
+        super().__init__(hub, False)
 
     def pull(self):
         self.hub.send_serialized_data("GetSmartMode")

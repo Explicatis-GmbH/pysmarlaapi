@@ -8,9 +8,9 @@ _VT = TypeVar("_VT")
 
 class Property(Generic[_VT]):
 
-    def __init__(self, hub: ConnectionHub):
+    def __init__(self, hub: ConnectionHub, value: _VT):
         self.hub = hub
-        self.value: _VT = None
+        self.value: _VT = value
         self.listeners = set()
         self.lock = asyncio.Lock()
 

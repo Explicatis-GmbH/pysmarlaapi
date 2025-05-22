@@ -11,7 +11,7 @@ class AnalyserService(Service):
         self.add_property("swing_count", SwingCountProperty(hub))
 
 
-class OscillationProperty(Property[list[int, int]]):
+class OscillationProperty(Property[list[int]]):
 
     async def on_callback(self, args):
         value = args[0]["value"]
@@ -19,8 +19,7 @@ class OscillationProperty(Property[list[int, int]]):
         await self.notify_listeners(value)
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
-        self.value = [0, 0]
+        super().__init__(hub, [0, 0])
 
     def pull(self):
         self.hub.send_serialized_data("GetOscillation")
@@ -37,8 +36,7 @@ class ActivityProperty(Property[int]):
         await self.notify_listeners(value)
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
-        self.value = 0
+        super().__init__(hub, 0)
 
     def pull(self):
         self.hub.send_serialized_data("GetActivity")
@@ -55,8 +53,7 @@ class SwingCountProperty(Property[int]):
         await self.notify_listeners(value)
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
-        self.value = 0
+        super().__init__(hub, 0)
 
     def pull(self):
         self.hub.send_serialized_data("GetSwingCount")
