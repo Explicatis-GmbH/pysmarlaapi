@@ -19,7 +19,7 @@ class SwingActiveProperty(Property[bool]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub, False)
+        super().__init__(hub)
 
     def pull(self):
         self.hub.send_serialized_data("GetSwingActive")
@@ -39,7 +39,7 @@ class IntensityProperty(Property[int]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub, 0)
+        super().__init__(hub)
 
     def pull(self):
         self.hub.send_serialized_data("GetIntensity")
@@ -59,7 +59,7 @@ class SmartModeProperty(Property[bool]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub, False)
+        super().__init__(hub)
 
     def pull(self):
         self.hub.send_serialized_data("GetSmartMode")

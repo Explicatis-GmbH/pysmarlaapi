@@ -19,7 +19,7 @@ class OscillationProperty(Property[list[int]]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub, [0, 0])
+        super().__init__(hub)
 
     def pull(self):
         self.hub.send_serialized_data("GetOscillation")
@@ -36,7 +36,7 @@ class ActivityProperty(Property[int]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub, 0)
+        super().__init__(hub)
 
     def pull(self):
         self.hub.send_serialized_data("GetActivity")
@@ -53,7 +53,7 @@ class SwingCountProperty(Property[int]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub, 0)
+        super().__init__(hub)
 
     def pull(self):
         self.hub.send_serialized_data("GetSwingCount")

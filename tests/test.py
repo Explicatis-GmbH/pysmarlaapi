@@ -51,7 +51,7 @@ def main():
     print(f"Swing Active: {value}")
     intensity = intensity_prop.get()
     print(f"Intensity: {intensity}%")
-    oscillation = oscillation_prop.get()
+    oscillation = oscillation_prop.get() or [None, None]
     print(f"Amplitude: {oscillation[0]}mm Period: {oscillation[1]}ms")
 
     swing_active_prop.set(True)
@@ -63,7 +63,7 @@ def main():
     print(f"Swing Active: {value}")
     intensity = intensity_prop.get()
     print(f"Intensity: {intensity}%")
-    oscillation = oscillation_prop.get()
+    oscillation = oscillation_prop.get() or [None, None]
     print(f"Amplitude: {oscillation[0]}mm Period: {oscillation[1]}ms")
 
     time.sleep(1)
@@ -73,7 +73,7 @@ def main():
         print(f"Swing Active: {value}")
         intensity = intensity_prop.get()
         print(f"Intensity: {intensity}%")
-        oscillation = oscillation_prop.get()
+        oscillation = oscillation_prop.get() or [None, None]
         print(f"Amplitude: {oscillation[0]}mm Period: {oscillation[1]}ms")
         time.sleep(1)
 

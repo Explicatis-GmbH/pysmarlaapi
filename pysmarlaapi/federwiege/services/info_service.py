@@ -18,7 +18,7 @@ class DisplayNameProperty(Property[str]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub, "Smarla")
+        super().__init__(hub)
 
     def pull(self):
         self.hub.send_serialized_data("GetDisplayName")
@@ -35,7 +35,7 @@ class VersionProperty(Property[str]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub, "1.0.0")
+        super().__init__(hub)
 
     def pull(self):
         self.hub.send_serialized_data("GetVersion")
