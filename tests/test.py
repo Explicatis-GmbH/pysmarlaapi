@@ -43,9 +43,9 @@ def main():
 
     time.sleep(1)
 
-    print(display_name_prop.get())
-    print(version_prop.get())
-    print(swing_count_prop.get())
+    print("Name: ", display_name_prop.get())
+    print("Version: ", version_prop.get())
+    print("Swing count: ", swing_count_prop.get())
 
     value = swing_active_prop.get()
     print(f"Swing Active: {value}")

@@ -14,9 +14,9 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "aiohttp~=3.11",
-    "jsonpickle~=4.0.0",
-    "pysignalr~=1.1.0",
+    "aiohttp>=3.11",
+    "jsonpickle>=4.0.0",
+    "pysignalr>=1.3.0",
 ]
 description = "Swing2Sleep Smarla API"
 license = "Apache-2.0"
