@@ -16,6 +16,10 @@ async def event_wait(event, timeout):
         return
 
 
+# suppress warnings from pysignalr (to avoid missing client method warnings)
+logging.getLogger('pysignalr.client').setLevel(logging.ERROR)
+
+
 class ConnectionHub:
     """SignalRCore Hub
     Provides interface via websocket for the controller using the SignalRCore protocol.
