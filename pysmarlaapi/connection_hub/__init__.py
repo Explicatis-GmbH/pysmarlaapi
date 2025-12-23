@@ -37,13 +37,12 @@ class ConnectionHub:
         self,
         event_loop: asyncio.AbstractEventLoop,
         connection: Connection,
-        interval: int = 60,
-        backoff: int = 300,
+        max_delay: int = 256,
     ):
         self.connection: Connection = connection
         self._loop = event_loop
-        self._interval = interval
-        self._backoff = backoff
+        self._retry_delay = 1 # Initial connection retry delay
+        self._max_delay = max_delay
 
         self.logger = logging.getLogger(f"{__package__}[{self.connection.token.serialNumber}]")
 
@@ -84,6 +83,7 @@ class ConnectionHub:
             await listener(value)
 
     async def on_open_function(self):
+        self._retry_delay = 1
         self.logger.info("Connection to server established")
 
     async def on_close_function(self):
@@ -114,9 +114,13 @@ class ConnectionHub:
                 self.logger.warning("Error during connection: %s: %s", type(e).__name__, str(e))
 
             # Random backoff to avoid simultaneous connection attempts
-            backoff = random.randint(0, self._backoff)
-            await event_wait(self._wake, self._interval + backoff)
+            jitter = random.uniform(0, 0.5) * self._retry_delay
+            await event_wait(self._wake, self._retry_delay + jitter)
             self._wake.clear()
+
+            # Double the delay for the next attempt
+            if self._retry_delay < self._max_delay:
+                self._retry_delay *= 2
 
     def wake_up(self):
         self._wake.set()
