@@ -4,7 +4,8 @@ import threading
 from ..classes import Connection
 from ..connection_hub import ConnectionHub
 from .classes import Service
-from .services import AnalyserService, BabywiegeService, InfoService
+from .services import (AnalyserService, BabywiegeService, InfoService,
+                       SystemService)
 
 
 class Federwiege:
@@ -29,6 +30,7 @@ class Federwiege:
             "babywiege": BabywiegeService(self.hub),
             "analyser": AnalyserService(self.hub),
             "info": InfoService(self.hub),
+            "system": SystemService(self.hub),
         }
 
         self.registered = False

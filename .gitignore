@@ -130,3 +130,5 @@ dmypy.json
 
 # Ignore config file with secrets
 /config.py
+
+.vscode/

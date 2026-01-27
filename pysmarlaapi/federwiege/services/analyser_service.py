@@ -1,5 +1,6 @@
 from ...connection_hub import ConnectionHub
 from ..classes import Property, Service
+from ..types import SpringStatus
 
 
 class AnalyserService(Service):
@@ -9,6 +10,7 @@ class AnalyserService(Service):
         self.add_property("oscillation", OscillationProperty(hub))
         self.add_property("activity", ActivityProperty(hub))
         self.add_property("swing_count", SwingCountProperty(hub))
+        self.add_property("spring_status", SpringStatusProperty(hub))
 
 
 class OscillationProperty(Property[list[int]]):
@@ -60,3 +62,20 @@ class SwingCountProperty(Property[int]):
 
     def register(self):
         self.hub.client.on("GetSwingCountCallback", self.on_callback)
+
+
+class SpringStatusProperty(Property[SpringStatus]):
+
+    async def on_callback(self, args):
+        value = args[0]["value"]
+        self.set(value, push=False)
+        await self.notify_listeners()
+
+    def __init__(self, hub: ConnectionHub):
+        super().__init__(hub)
+
+    def pull(self):
+        self.hub.send_serialized_data("GetSpringStatus")
+
+    def register(self):
+        self.hub.client.on("GetSpringStatusCallback", self.on_callback)

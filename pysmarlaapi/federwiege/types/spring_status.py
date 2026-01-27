@@ -1,0 +1,10 @@
+from enum import IntEnum
+
+
+class SpringStatus(IntEnum):
+    UNKNOWN = 0
+    NORMAL = 1
+    CONSTELLATION_TOO_HIGH = 2
+    CONSTELLATION_TOO_LOW = 3
+    CONSTELLATION_CRITICAL_TOO_HIGH = 4
+    CONSTELLATION_CRITICAL_TOO_LOW = 5
