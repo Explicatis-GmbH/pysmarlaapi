@@ -136,6 +136,8 @@ class ConnectionHub:
         self._wake.set()
 
     async def close_connection(self):
+        if not self.connected:
+            return
         await self.cancel_reconnect_job()
         await self.client._transport._ws.close()
 
