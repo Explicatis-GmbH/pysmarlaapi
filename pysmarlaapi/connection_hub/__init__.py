@@ -39,13 +39,11 @@ class ConnectionHub:
         event_loop: asyncio.AbstractEventLoop,
         connection: Connection,
         max_delay: int = 256,
-        forced_reconnect_interval: int = 86400,
     ):
         self.connection: Connection = connection
         self._loop = event_loop
         self._retry_delay = 1 # Initial connection retry delay
         self._max_delay = max_delay
-        self._forced_reconnect_interval = forced_reconnect_interval
 
         self.logger = logging.getLogger(f"{__package__}[{self.connection.token.serialNumber}]")
 
@@ -53,10 +51,6 @@ class ConnectionHub:
 
         self._running = False
         self._wake = asyncio.Event()
-
-        self._reconnect_future: asyncio.Future = None
-        self._reconnect_lock = asyncio.Lock()
-        self._reconnect_cancel_event = asyncio.Event()
 
         self.client = None
         self.setup()
@@ -92,11 +86,9 @@ class ConnectionHub:
     async def on_open_function(self):
         self._retry_delay = 1
         self.logger.info("Connection to server established")
-        await self.start_reconnect_job()
 
     async def on_close_function(self):
         self.logger.info("Connection to server closed")
-        await self.cancel_reconnect_job()
 
     async def on_error(self, message):
         self.logger.error("Connection error occurred: %s", str(message))
@@ -138,30 +130,6 @@ class ConnectionHub:
     async def close_connection(self):
         if not self.connected:
             return
-        await self.cancel_reconnect_job()
-        await self.client._transport._ws.close()
-
-    async def start_reconnect_job(self):
-        async with self._reconnect_lock:
-            if self._reconnect_future and not self._reconnect_future.done():
-                return
-            self._reconnect_cancel_event.clear()
-            self._reconnect_future = asyncio.create_task(self.reconnect_job())
-
-    async def cancel_reconnect_job(self):
-        async with self._reconnect_lock:
-            if not self._reconnect_future or self._reconnect_future.done():
-                return
-            self._reconnect_cancel_event.set()
-            await self._reconnect_future
-
-    async def reconnect_job(self):
-        cancelled = await event_wait(self._reconnect_cancel_event, self._forced_reconnect_interval)
-        if cancelled:
-            return
-
-        # Close connection to trigger a reconnection
-        # Make sure that connection stays healthy
         await self.client._transport._ws.close()
 
     async def refresh_token(self):
