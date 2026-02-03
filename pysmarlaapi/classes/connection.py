@@ -8,7 +8,14 @@ from . import AuthToken
 
 class Connection:
 
-    def __init__(self, url: str, token: AuthToken = None, token_str=None, token_json=None, token_b64=None):
+    def __init__(
+            self,
+            url: str,
+            token: AuthToken | None = None,
+            token_str: str | None = None,
+            token_json : dict | None = None,
+            token_b64: str | None = None,
+        ):
         self.url = url
         if token is not None:
             self.token = token
@@ -19,7 +26,7 @@ class Connection:
         elif token_b64 is not None:
             self.token = AuthToken.from_base64(token_b64)
         else:
-            self.token = None
+            raise ValueError("Token missing")
 
     def get_token(self) -> str:
         return self.token.token
