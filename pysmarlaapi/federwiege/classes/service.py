@@ -14,8 +14,6 @@ class Service:
         return self.props
 
     def get_property(self, key: str):
-        if key not in self.props:
-            return None
         return self.props[key]
 
     def register(self):

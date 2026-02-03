@@ -59,14 +59,10 @@ class Federwiege:
         return (content["targetFirmware"], content["releaseNotes"])
 
     def get_service(self, key: str):
-        if key not in self.services:
-            return None
         return self.services[key]
 
     def get_property(self, service_key: str, prop_key: str):
         service = self.get_service(service_key)
-        if not service:
-            return None
         return service.get_property(prop_key)
 
     def connect(self):

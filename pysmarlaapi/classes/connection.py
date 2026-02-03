@@ -27,11 +27,15 @@ class Connection:
     async def refresh_token(self) -> bool:
         try:
             async with aiohttp.ClientSession(self.url) as session:
-                content = await self._get_token(session)
+                response = await session.post(
+                    "/api/AppParing/getToken",
+                    headers={"accept": "*/*", "Content-Type": "application/json"},
+                    data=jsonpickle.encode(self.token, unpicklable=False),
+                )
+                if response.status != 200:
+                    return False
+                content = await response.json()
         except (aiohttp.ClientError, asyncio.TimeoutError):
-            return False
-
-        if not content:
             return False
 
         try:
@@ -40,13 +44,3 @@ class Connection:
             return False
 
         return True
-
-    async def _get_token(self, session: aiohttp.ClientSession):
-        async with await session.post(
-            "/api/AppParing/getToken",
-            headers={"accept": "*/*", "Content-Type": "application/json"},
-            data=jsonpickle.encode(self.token, unpicklable=False),
-        ) as response:
-            if response.status != 200:
-                return None
-            return await response.json()
