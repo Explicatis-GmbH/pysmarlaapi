@@ -18,14 +18,14 @@ class Federwiege:
     def connected(self):
         return self.hub.connected
 
-    async def on_controller_connection_change(self, value):
+    async def on_connection_change(self, value):
         self.available = value
-        if value:
+        if self.available:
             self.sync()
 
     def __init__(self, event_loop: asyncio.AbstractEventLoop, connection: Connection):
         self.serial_number = connection.token.serialNumber
-        self.hub = ConnectionHub(event_loop, connection)
+        self.hub = ConnectionHub(event_loop, connection, self.on_connection_change)
         self.services: dict[str, Service] = {
             "babywiege": BabywiegeService(self.hub),
             "analyser": AnalyserService(self.hub),
@@ -66,7 +66,6 @@ class Federwiege:
         with self._lock:
             if self.registered:
                 return
-            self.registered = True
-            self.hub.add_listener(self.on_controller_connection_change)
             for service in self.services.values():
                 service.register()
+            self.registered = True

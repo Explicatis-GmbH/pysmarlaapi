@@ -38,6 +38,7 @@ class ConnectionHub:
         self,
         event_loop: asyncio.AbstractEventLoop,
         connection: Connection,
+        listener,
         max_delay: int = 256,
     ):
         self.connection: Connection = connection
@@ -47,7 +48,7 @@ class ConnectionHub:
 
         self.logger = logging.getLogger(f"{__package__}[{self.connection.token.serialNumber}]")
 
-        self.listeners = set()
+        self.connection_callback = listener
 
         self._running = False
         self._wake = asyncio.Event()
@@ -58,9 +59,11 @@ class ConnectionHub:
     async def notifycontrollerconnection(self, args):
         value = args[0]
         if value == "ControllerConnected":
-            await self.notify_listeners(True)
+            self.logger.info("Controller connected")
+            await self.connection_callback(True)
         else:
-            await self.notify_listeners(False)
+            self.logger.info("Controller disconnected")
+            await self.connection_callback(False)
 
     def setup(self):
         self.client = SignalRClient(self.connection.url + "/MobileAppHub", retry_count=1)
@@ -68,20 +71,6 @@ class ConnectionHub:
         self.client.on_close(self.on_close_function)
         self.client.on_error(self.on_error)
         self.client.on("SetNotifyAppConnectionCallback", self.notifycontrollerconnection)
-
-    def add_listener(self, listener):
-        if self.running:
-            return
-        self.listeners.add(listener)
-
-    def remove_listener(self, listener):
-        if self.running:
-            return
-        self.listeners.remove(listener)
-
-    async def notify_listeners(self, value):
-        for listener in self.listeners:
-            await listener(value)
 
     async def on_open_function(self):
         self._retry_delay = 1
