@@ -1,6 +1,8 @@
 import asyncio
 import threading
 
+import aiohttp
+
 from ..classes import Connection
 from ..connection_hub import ConnectionHub
 from .classes import Service
@@ -25,6 +27,7 @@ class Federwiege:
 
     def __init__(self, event_loop: asyncio.AbstractEventLoop, connection: Connection):
         self.serial_number = connection.token.serialNumber
+        self.connection = connection
         self.hub = ConnectionHub(event_loop, connection, self.on_connection_change)
         self.services: dict[str, Service] = {
             "babywiege": BabywiegeService(self.hub),
@@ -37,6 +40,23 @@ class Federwiege:
         self._lock = threading.Lock()
 
         self.available = False
+
+    async def check_firmware_update(self) -> tuple[str, str] | None:
+        await self.connection.refresh_token()
+
+        try:
+            async with aiohttp.ClientSession(self.connection.url) as session:
+                response = await session.get(
+                    "/api/Firmware/CheckFirmwareUpdate",
+                    headers={"accept": "*/*", "Content-Type": "application/json", "Authorization": f"Bearer {self.connection.get_token()}"},
+                )
+                if response.status != 200:
+                    return None
+                content = await response.json()
+        except (aiohttp.ClientError, asyncio.TimeoutError):
+            return None
+
+        return (content["targetFirmware"], content["releaseNotes"])
 
     def get_service(self, key: str):
         if key not in self.services:
