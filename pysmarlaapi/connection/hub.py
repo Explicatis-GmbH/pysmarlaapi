@@ -6,7 +6,8 @@ import uuid
 from pysignalr.client import SignalRClient
 from pysignalr.transport.abstract import ConnectionState
 
-from ..classes import Connection
+from . import Connection
+from .exceptions import AuthenticationException, ConnectionException
 
 
 async def event_wait(event, timeout) -> bool:
@@ -38,7 +39,8 @@ class ConnectionHub:
         self,
         event_loop: asyncio.AbstractEventLoop,
         connection: Connection,
-        listener,
+        connection_callback = None,
+        auth_failure_callback = None,
         max_delay: int = 256,
     ):
         self.connection: Connection = connection
@@ -48,7 +50,8 @@ class ConnectionHub:
 
         self.logger = logging.getLogger(f"{__package__}[{self.connection.token.serialNumber}]")
 
-        self.connection_callback = listener
+        self.connection_callback = connection_callback
+        self.auth_failure_callback = auth_failure_callback
 
         self._running = False
         self._wake = asyncio.Event()
@@ -60,10 +63,12 @@ class ConnectionHub:
         value = args[0]
         if value == "ControllerConnected":
             self.logger.info("Controller connected")
-            await self.connection_callback(True)
+            if self.connection_callback:
+                await self.connection_callback(True)
         else:
             self.logger.info("Controller disconnected")
-            await self.connection_callback(False)
+            if self.connection_callback:
+                await self.connection_callback(False)
 
     def setup(self):
         self.client = SignalRClient(self.connection.url + "/MobileAppHub", retry_count=1)
@@ -78,7 +83,8 @@ class ConnectionHub:
 
     async def on_close_function(self):
         self.logger.info("Connection to server closed")
-        await self.connection_callback(False)
+        if self.connection_callback:
+            await self.connection_callback(False)
 
     async def on_error(self, message):
         self.logger.error("Connection error occurred: %s", str(message))
@@ -98,15 +104,26 @@ class ConnectionHub:
 
     async def connection_watcher(self):
         while self.running:
-            await self.refresh_token()
             try:
-                await self.client.run()
-            except Exception as e:
-                self.logger.warning("Error during connection: %s: %s", type(e).__name__, str(e))
+                response = await self.refresh_connection()
+            except AuthenticationException:
+                self.logger.warning("Authentication failed, Won't retry.")
+                if self.auth_failure_callback:
+                    await self.auth_failure_callback()
+                return
+
+            if response:
+                try:
+                    await self.client.run()
+                except Exception as e:
+                    self.logger.warning("Error during connection: %s: %s", type(e).__name__, str(e))
 
             # Random backoff to avoid simultaneous connection attempts
             jitter = random.uniform(0, 0.5) * self._retry_delay
             delay = self._retry_delay + jitter
+
+            self.logger.debug("Will retry connection in %i seconds.", delay)
+
             await event_wait(self._wake, delay)
             self._wake.clear()
 
@@ -122,10 +139,16 @@ class ConnectionHub:
             return
         await self.client._transport._ws.close()
 
-    async def refresh_token(self):
-        await self.connection.refresh_token()
+    async def refresh_connection(self) -> bool:
+        try:
+            await self.connection.refresh_token()
+        except ConnectionException:
+            self.logger.warning("Failed to refresh auth token")
+            return False
+
         self.client._transport._headers["Authorization"] = f"Bearer {self.connection.get_token()}"
         self.logger.info("Auth token refreshed")
+        return True
 
     def send_serialized_data(self, event, value=None):
         serialized_result = {

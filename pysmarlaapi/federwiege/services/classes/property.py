@@ -1,8 +1,6 @@
 import asyncio
 from typing import Generic, TypeVar
 
-from ...connection_hub import ConnectionHub
-
 _VT = TypeVar("_VT")
 
 
@@ -10,8 +8,7 @@ class Property(Generic[_VT]):
 
     value: _VT | None = None
 
-    def __init__(self, hub: ConnectionHub):
-        self.hub = hub
+    def __init__(self):
         self.listeners = set()
         self.lock = asyncio.Lock()
 

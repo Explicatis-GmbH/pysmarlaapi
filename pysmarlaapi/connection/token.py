@@ -18,7 +18,7 @@ class AuthToken:
 
     @classmethod
     def from_json(cls, value: dict) -> Self:
-        value["py/object"] = "pysmarlaapi.classes.auth_token.AuthToken"
+        value["py/object"] = "pysmarlaapi.connection.AuthToken"
         return jsonpickle.decode(json.dumps(value))
 
     @classmethod

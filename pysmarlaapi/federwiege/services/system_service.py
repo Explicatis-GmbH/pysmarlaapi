@@ -1,6 +1,6 @@
-from ...connection_hub import ConnectionHub
-from ..classes import Property, Service
-from ..types import SendDiagStatus, UpdateStatus
+from ...connection.hub import ConnectionHub
+from .classes import Property, Service
+from .types import SendDiagStatus, UpdateStatus
 
 
 class SystemService(Service):
@@ -16,7 +16,8 @@ class SystemService(Service):
 class FirmwareUpdateProperty(Property[int]):
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
+        super().__init__()
+        self.hub = hub
 
     def push(self, value: int):
         self.hub.send_serialized_data("SetFirmwareUpdate", value)
@@ -30,7 +31,8 @@ class FirmwareUpdateStatusProperty(Property[UpdateStatus]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
+        super().__init__()
+        self.hub = hub
 
     def pull(self):
         self.hub.send_serialized_data("GetFirmwareUpdate")
@@ -42,7 +44,8 @@ class FirmwareUpdateStatusProperty(Property[UpdateStatus]):
 class SendDiagnosticDataProperty(Property[str]):
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
+        super().__init__()
+        self.hub = hub
 
     def push(self, value: str):
         self.hub.send_serialized_data("SetSendDiagnosticData", value)
@@ -56,7 +59,8 @@ class SendDiagnosticDataStatusProperty(Property[SendDiagStatus]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
+        super().__init__()
+        self.hub = hub
 
     def pull(self):
         self.hub.send_serialized_data("GetSendDiagnosticData")

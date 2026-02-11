@@ -1,6 +1,6 @@
-from ...connection_hub import ConnectionHub
-from ..classes import Property, Service
-from ..types import SpringStatus
+from ...connection.hub import ConnectionHub
+from .classes import Property, Service
+from .types import SpringStatus
 
 
 class AnalyserService(Service):
@@ -21,7 +21,8 @@ class OscillationProperty(Property[list[int]]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
+        super().__init__()
+        self.hub = hub
 
     def pull(self):
         self.hub.send_serialized_data("GetOscillation")
@@ -38,7 +39,8 @@ class ActivityProperty(Property[int]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
+        super().__init__()
+        self.hub = hub
 
     def pull(self):
         self.hub.send_serialized_data("GetActivity")
@@ -55,7 +57,8 @@ class SwingCountProperty(Property[int]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
+        super().__init__()
+        self.hub = hub
 
     def pull(self):
         self.hub.send_serialized_data("GetSwingCount")
@@ -72,7 +75,8 @@ class SpringStatusProperty(Property[SpringStatus]):
         await self.notify_listeners()
 
     def __init__(self, hub: ConnectionHub):
-        super().__init__(hub)
+        super().__init__()
+        self.hub = hub
 
     def pull(self):
         self.hub.send_serialized_data("GetSpringStatus")

@@ -26,10 +26,11 @@ federwiege = Federwiege(loop, connection)
 
 def main():
     async_thread.start()
+
     federwiege.register()
     federwiege.connect()
 
-    while not (federwiege.connected and federwiege.available):
+    while not federwiege.available:
         time.sleep(1)
 
     swing_active_prop = federwiege.get_property("babywiege", "swing_active")

@@ -3,7 +3,8 @@ import asyncio
 import aiohttp
 import jsonpickle
 
-from . import AuthToken
+from .exceptions import AuthenticationException, ConnectionException
+from .token import AuthToken
 
 
 class Connection:
@@ -31,7 +32,7 @@ class Connection:
     def get_token(self) -> str:
         return self.token.token
 
-    async def refresh_token(self) -> bool:
+    async def refresh_token(self):
         try:
             async with aiohttp.ClientSession(self.url) as session:
                 response = await session.post(
@@ -40,14 +41,12 @@ class Connection:
                     data=jsonpickle.encode(self.token, unpicklable=False),
                 )
                 if response.status != 200:
-                    return False
+                    raise AuthenticationException
                 content = await response.json()
-        except (aiohttp.ClientError, asyncio.TimeoutError):
-            return False
+        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+            raise ConnectionException from e
 
         try:
             self.token = AuthToken.from_json(content)
-        except ValueError:
-            return False
-
-        return True
+        except ValueError as e:
+            raise AuthenticationException from e
