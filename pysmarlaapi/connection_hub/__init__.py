@@ -78,6 +78,7 @@ class ConnectionHub:
 
     async def on_close_function(self):
         self.logger.info("Connection to server closed")
+        await self.connection_callback(False)
 
     async def on_error(self, message):
         self.logger.error("Connection error occurred: %s", str(message))

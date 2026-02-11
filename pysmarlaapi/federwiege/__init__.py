@@ -21,9 +21,13 @@ class Federwiege:
         return self.hub.connected
 
     async def on_connection_change(self, value):
+        if value == self.available:
+            return
+
         self.available = value
         if self.available:
             self.sync()
+
         # Notify listeners of availability
         await self.notify_listeners()
 
