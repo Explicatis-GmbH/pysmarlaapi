@@ -25,11 +25,10 @@ class Federwiege:
             return
 
         self.available = value
+        await self.notify_listeners()
+
         if self.available:
             self.sync()
-
-        # Notify listeners of availability
-        await self.notify_listeners()
 
     def __init__(self, event_loop: asyncio.AbstractEventLoop, connection: Connection):
         self.serial_number = connection.token.serialNumber
