@@ -24,6 +24,8 @@ class Federwiege:
         self.available = value
         if self.available:
             self.sync()
+        # Notify listeners of availability
+        await self.notify_listeners()
 
     def __init__(self, event_loop: asyncio.AbstractEventLoop, connection: Connection):
         self.serial_number = connection.token.serialNumber
@@ -38,6 +40,9 @@ class Federwiege:
 
         self.registered = False
         self._lock = threading.Lock()
+
+        self._listeners = set()
+        self._listeners_lock = asyncio.Lock()
 
         self.available = False
 
@@ -85,3 +90,16 @@ class Federwiege:
             for service in self.services.values():
                 service.register()
             self.registered = True
+
+    async def add_listener(self, listener):
+        async with self._listeners_lock:
+            self._listeners.add(listener)
+
+    async def remove_listener(self, listener):
+        async with self._listeners_lock:
+            self._listeners.remove(listener)
+
+    async def notify_listeners(self):
+        async with self._listeners_lock:
+            for listener in self._listeners:
+                await listener(self.available)
