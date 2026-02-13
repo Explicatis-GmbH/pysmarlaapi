@@ -1,4 +1,4 @@
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 from .connection import AuthToken, Connection
 from .federwiege import Federwiege
