@@ -26,7 +26,7 @@ class DisplayNameProperty(Property[str]):
         self.hub.send_serialized_data("GetDisplayName")
 
     def register(self):
-        self.hub.client.on("GetDisplayNameCallback", self.on_callback)
+        self.hub.on("GetDisplayNameCallback", self.on_callback)
 
 
 class VersionProperty(Property[str]):
@@ -44,7 +44,7 @@ class VersionProperty(Property[str]):
         self.hub.send_serialized_data("GetVersion")
 
     def register(self):
-        self.hub.client.on("GetVersionCallback", self.on_callback)
+        self.hub.on("GetVersionCallback", self.on_callback)
 
 
 class TotalSwingTimeProperty(Property[int]):
@@ -62,4 +62,4 @@ class TotalSwingTimeProperty(Property[int]):
         self.hub.send_serialized_data("GetTotalSwingTime")
 
     def register(self):
-        self.hub.client.on("GetTotalSwingTimeCallback", self.on_callback)
+        self.hub.on("GetTotalSwingTimeCallback", self.on_callback)

@@ -28,7 +28,7 @@ class OscillationProperty(Property[list[int]]):
         self.hub.send_serialized_data("GetOscillation")
 
     def register(self):
-        self.hub.client.on("GetOscillationCallback", self.on_callback)
+        self.hub.on("GetOscillationCallback", self.on_callback)
 
 
 class ActivityProperty(Property[int]):
@@ -46,7 +46,7 @@ class ActivityProperty(Property[int]):
         self.hub.send_serialized_data("GetActivity")
 
     def register(self):
-        self.hub.client.on("GetActivityCallback", self.on_callback)
+        self.hub.on("GetActivityCallback", self.on_callback)
 
 
 class SwingCountProperty(Property[int]):
@@ -64,7 +64,7 @@ class SwingCountProperty(Property[int]):
         self.hub.send_serialized_data("GetSwingCount")
 
     def register(self):
-        self.hub.client.on("GetSwingCountCallback", self.on_callback)
+        self.hub.on("GetSwingCountCallback", self.on_callback)
 
 
 class SpringStatusProperty(Property[SpringStatus]):
@@ -82,4 +82,4 @@ class SpringStatusProperty(Property[SpringStatus]):
         self.hub.send_serialized_data("GetSpringStatus")
 
     def register(self):
-        self.hub.client.on("GetSpringStatusCallback", self.on_callback)
+        self.hub.on("GetSpringStatusCallback", self.on_callback)

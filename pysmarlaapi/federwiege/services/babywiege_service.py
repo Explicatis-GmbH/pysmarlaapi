@@ -29,7 +29,7 @@ class SwingActiveProperty(Property[bool]):
         self.hub.send_serialized_data("SetSwingActive", value)
 
     def register(self):
-        self.hub.client.on("GetSwingActiveCallback", self.on_callback)
+        self.hub.on("GetSwingActiveCallback", self.on_callback)
 
 
 class IntensityProperty(Property[int]):
@@ -50,7 +50,7 @@ class IntensityProperty(Property[int]):
         self.hub.send_serialized_data("SetIntensity", value)
 
     def register(self):
-        self.hub.client.on("GetIntensityCallback", self.on_callback)
+        self.hub.on("GetIntensityCallback", self.on_callback)
 
 
 class SmartModeProperty(Property[bool]):
@@ -71,4 +71,4 @@ class SmartModeProperty(Property[bool]):
         self.hub.send_serialized_data("SetSmartMode", value)
 
     def register(self):
-        self.hub.client.on("GetSmartModeCallback", self.on_callback)
+        self.hub.on("GetSmartModeCallback", self.on_callback)

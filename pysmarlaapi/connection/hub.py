@@ -33,7 +33,7 @@ class ConnectionHub:
 
     @property
     def connected(self):
-        return self.client._transport._state == ConnectionState.connected if self.client else False
+        return self.client._transport._state == ConnectionState.connected
 
     def __init__(
         self,
@@ -56,8 +56,14 @@ class ConnectionHub:
         self._running = False
         self._wake = asyncio.Event()
 
-        self.client = None
-        self.setup()
+        self.client = SignalRClient(self.connection.url + "/MobileAppHub", retry_count=1)
+        self.client.on_open(self.on_open_function)
+        self.client.on_close(self.on_close_function)
+        self.client.on_error(self.on_error)
+        self.client.on("SetNotifyAppConnectionCallback", self.notifycontrollerconnection)
+
+    def on(self, event: str, callback):
+        self.client.on(event, callback)
 
     async def notifycontrollerconnection(self, args):
         value = args[0]
@@ -69,13 +75,6 @@ class ConnectionHub:
             self.logger.info("Controller disconnected")
             if self.connection_callback:
                 await self.connection_callback(False)
-
-    def setup(self):
-        self.client = SignalRClient(self.connection.url + "/MobileAppHub", retry_count=1)
-        self.client.on_open(self.on_open_function)
-        self.client.on_close(self.on_close_function)
-        self.client.on_error(self.on_error)
-        self.client.on("SetNotifyAppConnectionCallback", self.notifycontrollerconnection)
 
     async def on_open_function(self):
         self._retry_delay = 1

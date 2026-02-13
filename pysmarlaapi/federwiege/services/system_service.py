@@ -38,7 +38,7 @@ class FirmwareUpdateStatusProperty(Property[UpdateStatus]):
         self.hub.send_serialized_data("GetFirmwareUpdate")
 
     def register(self):
-        self.hub.client.on("GetFirmwareUpdateCallback", self.on_callback)
+        self.hub.on("GetFirmwareUpdateCallback", self.on_callback)
 
 
 class SendDiagnosticDataProperty(Property[str]):
@@ -66,4 +66,4 @@ class SendDiagnosticDataStatusProperty(Property[SendDiagStatus]):
         self.hub.send_serialized_data("GetSendDiagnosticData")
 
     def register(self):
-        self.hub.client.on("GetSendDiagnosticDataCallback", self.on_callback)
+        self.hub.on("GetSendDiagnosticDataCallback", self.on_callback)
