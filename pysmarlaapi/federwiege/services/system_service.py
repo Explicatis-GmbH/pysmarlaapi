@@ -26,7 +26,7 @@ class FirmwareUpdateProperty(Property[int]):
 class FirmwareUpdateStatusProperty(Property[UpdateStatus]):
 
     async def on_callback(self, args):
-        value = args[0]["value"]
+        value = UpdateStatus(args[0]["value"])
         self.set(value, push=False)
         await self.notify_listeners()
 
@@ -54,7 +54,7 @@ class SendDiagnosticDataProperty(Property[str]):
 class SendDiagnosticDataStatusProperty(Property[SendDiagStatus]):
 
     async def on_callback(self, args):
-        value = args[0]["value"]
+        value = SendDiagStatus(args[0]["value"])
         self.set(value, push=False)
         await self.notify_listeners()
 

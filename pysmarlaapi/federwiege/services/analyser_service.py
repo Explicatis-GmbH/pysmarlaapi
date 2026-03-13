@@ -70,7 +70,7 @@ class SwingCountProperty(Property[int]):
 class SpringStatusProperty(Property[SpringStatus]):
 
     async def on_callback(self, args):
-        value = args[0]["value"]
+        value = SpringStatus(args[0]["value"])
         self.set(value, push=False)
         await self.notify_listeners()
 
